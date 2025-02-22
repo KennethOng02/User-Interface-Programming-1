@@ -1,22 +1,31 @@
-import { getAllBeverageNames } from "../models/beverages.js";
+import {getAllBeverageNames} from "../models/beverages.js";
+import {getAllFoodNames} from "../models/foods.js"; // Import food items
 
 class OrderView {
-  constructor() {}
+    constructor() {
+    }
 
-  render() {
-    const appContent = document.getElementById("app-content");
+    render() {
+        const appContent = document.getElementById("app-content");
 
-    const beverages = getAllBeverageNames();
+        // Get full objects (name + price)
+        const beverages = getAllBeverageNames();
+        const foods = getAllFoodNames();
 
-    appContent.innerHTML = `
-      <!--Menus-->
-      <div class="container">
+        appContent.innerHTML = `
+      <div class="dashboard-container">
         <div class="menu-container">
           <h3>Products</h3>
-          <div class="menus">
-            ${beverages
-              .map((name) => `<div class="menu-item">${name}</div>`)
-              .join("")}
+          
+          <!-- Tabs for Food & Drinks -->
+          <div class="menu-tabs">
+            <button id="food-tab" class="active">🍔 Food</button>
+            <button id="drinks-tab">🍹 Drinks</button>
+          </div>
+          
+          <!-- Menu Items (Will change when clicking tabs) -->
+          <div class="menus" id="menu-items">
+            ${foods.map((name) => `<div class="menu-item">${name}</div>`).join("")}
           </div>
         </div>
 
@@ -37,6 +46,7 @@ class OrderView {
               <option value="6">6</option>
             </select>
           </div>
+
           <h3>Order Details</h3>  
           <ul class="order-list" id="order-list">
             <li>
@@ -56,6 +66,7 @@ class OrderView {
               </span>
             </li>
           </ul>
+
           <hr>
           <h3>Order Summary</h3>
           <div class="order-summary">
@@ -64,16 +75,38 @@ class OrderView {
             <hr>
             <h4><span>Total:</span> <span>$76.89</span></h4>
           </div>
+
           <button id="confirm-btn" type="button">Confirm</button>
           <button id="clear-btn" type="button">Clear</button>
         </div>
       </div> 
     `;
 
-    this.setupEventListeners();
-  }
+        // Call function to enable tab switching
+        this.setupEventListeners();
+    }
 
-  setupEventListeners() {}
+    setupEventListeners() {
+        const foodTab = document.getElementById("food-tab");
+        const drinksTab = document.getElementById("drinks-tab");
+        const menuItems = document.getElementById("menu-items");
+
+        foodTab.addEventListener("click", () => {
+            foodTab.classList.add("active");
+            drinksTab.classList.remove("active");
+            menuItems.innerHTML = getAllFoodNames()
+                .map((name) => `<div class="menu-item">${name}</div>`)
+                .join("");
+        });
+
+        drinksTab.addEventListener("click", () => {
+            drinksTab.classList.add("active");
+            foodTab.classList.remove("active");
+            menuItems.innerHTML = getAllBeverageNames()
+                .map((name) => `<div class="menu-item">${name}</div>`)
+                .join("");
+        });
+    }
 }
 
 export default OrderView;
